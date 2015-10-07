@@ -13,7 +13,9 @@ with open('last_update', 'r') as f:
 bot = telegram.Bot(token)
 
 modes = ['echo', 'voice']
+languages = ['af', 'sq', 'ar', 'hy', 'ca', 'zh-CN', 'zh-TW', 'hr', 'cs', 'da', 'nl', 'en', 'eo', 'fi', 'fr', 'de', 'el', 'ht', 'hi', 'hu', 'is', 'id', 'it', 'ja', 'ko', 'la', 'lv', 'mk', 'no', 'pl', 'pt', 'ru', 'sr', 'sk', 'es', 'sw', 'sv', 'ta', 'th', 'tr', 'vi', 'cy']
 operating_mode = 'echo'
+language = 'en'
 
 # Operation
 while True:
@@ -28,17 +30,30 @@ while True:
 				if '/set_mode' in message:
 					new_mode = message.replace('/set_mode ', '', 1)
 					if new_mode in modes:
-						print('Changind mode to '+new_mode)
+						print('Changing mode to '+new_mode)
 						operating_mode = new_mode
+					else:
+						bot.sendMessage(chat_id=chat_id, text='Sorry, I don\'t know what is this mode you wanted :(')
+
+				elif '/set_language' in message:
+					new_language = message.replace('/set_language ', '', 1)
+					if new_language in languages:
+						print('Changing language to '+new_language)
+						language = new_language
+					else:
+						bot.sendMessage(chat_id=chat_id, text='Sorry, I don\'t speak this language :(')						
+
 				elif message == '/help':
-					bot.sendMessage(chat_id=chat_id, text='Write /set_mode {voice, echo} and start talking to me!')
+					bot.sendMessage(chat_id=chat_id, text='Write /set_mode {voice, echo} and start talking to me!\nPlus, you can set my language with /set_language <language code>.')
+
 				elif message[0] != '/':
 					if operating_mode == 'echo':
 						print('Sending echo')
 						bot.sendMessage(chat_id=chat_id, text=message)
+
 					elif operating_mode == 'voice':
 						print('Sending audio')
-						tts = gTTS(text=message, lang='en')
+						tts = gTTS(text=message, lang=language)
 						tts.save('audio.mp3')
 
 						bot.sendVoice(chat_id=chat_id, voice=open('audio.mp3', 'rb'))
